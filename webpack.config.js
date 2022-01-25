@@ -102,7 +102,8 @@ module.exports = () => {
         `,
         scriptLoading: 'defer',
         meta: {
-          description: 'a wordle solver'
+          description: 'a wordle solver',
+          viewport: 'width=device-width, initial-scale=1'
         },
         minify: {
           collapseWhitespace: true,
@@ -156,7 +157,7 @@ module.exports = () => {
       new MiniCssExtractPlugin({
         filename: '[name].css'
       }),
-      new HTMLWebpackPlugin({
+      new HtmlWebpackPlugin({
         filename: 'index.html',
         chunks: ['app'],
         inject: true,
@@ -175,7 +176,8 @@ module.exports = () => {
         `,
         scriptLoading: 'defer',
         meta: {
-          description: 'a wordle solver'
+          description: 'a wordle solver',
+          viewport: 'width=device-width, initial-scale=1'
         }
       }),
       new CopyWebpackPlugin({
