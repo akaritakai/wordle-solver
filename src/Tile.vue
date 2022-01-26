@@ -1,17 +1,18 @@
 <template>
   <div class="tile-container">
     <input class="tile"
-           v-model="guess.letter[index]"
-           :disabled="!allow_input"
+           pattern="[A-Za-z]"
+           v-model="letter"
+           v-bind:disabled="!allow_input"
            v-bind:class="{
-             absent: guess.evalution[index] === 'absent',
-             correct: guess.evalution[index] === 'correct',
-             present: guess.evalution[index] === 'present'
+             absent: evaluation === 'absent',
+             correct: evaluation === 'correct',
+             present: evaluation === 'present'
            }">
     <div v-if="allow_input" class="tile-buttons">
-      <button class="tile-button absent" @click="guess.evalution[index] = 'absent'"></button>
-      <button class="tile-button present" @click="guess.evalution[index] = 'correct'"></button>
-      <button class="tile-button correct" @click="guess.evalution[index] = 'present'"></button>
+      <button class="tile-button absent" @click="evaluation = 'absent'"></button>
+      <button class="tile-button present" @click="evaluation = 'present'"></button>
+      <button class="tile-button correct" @click="evaluation = 'correct'"></button>
     </div>
   </div>
 </template>
@@ -22,14 +23,41 @@ import { Guess } from './wordle';
 export default {
   name: "tile",
   props: {
-    guess: Guess,
-    index: Number,
-    allow_input: Boolean // If input is allowed for this tile
+    guess: {
+      type: Guess,
+      required: true
+    },
+    index: {
+      type: Number,
+      required: true
+    },
+    allow_input: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    letter: {
+      get: function() {
+        return this.guess.letter[this.index];
+      },
+      set: function(value) {
+        this.$set(this.guess.letter, this.index, value.trim()[0].toLowerCase());
+      }
+    },
+    evaluation: {
+      get: function() {
+        return this.guess.evaluation[this.index];
+      },
+      set: function(value) {
+        this.$set(this.guess.evaluation, this.index, value);
+      }
+    }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .tile-container {
   display: flex;
   flex-direction: column;
