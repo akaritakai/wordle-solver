@@ -3,9 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserJsPlugin = require('terser-webpack-plugin');
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV == 'production';
 
@@ -48,15 +46,6 @@ const config = {
           'postcss-loader',
           'sass-loader'
         ],
-      },
-      {
-        test: /\.(woff2)$/i,
-        use: [{
-          loader: 'file-loader',
-          options: {
-            name: '[name].[ext]'
-          }
-        }]
       }
     ]
   }
@@ -116,35 +105,6 @@ module.exports = () => {
           sortClassName: true,
           useShortDoctype: true
         }
-      }),
-      new FaviconsWebpackPlugin({
-        logo: path.resolve(__dirname, 'assets', 'favicon.png'),
-        prefix: '',
-        favicons: {
-          appName: null,
-          appShortName: null,
-          appDescription: null,
-          developerName: null,
-          developerURL: null,
-          lang: 'en-US',
-          logging: false,
-          pixel_art: false,
-          icons: {
-            android: false,
-            appleIcon: false,
-            appleStartup: false,
-            coast: false,
-            favicons: true,
-            firefox: false,
-            windows: false,
-            yandex: false
-          }
-        }
-      }),
-      new CopyWebpackPlugin({
-        patterns: [
-          { from: 'static' }
-        ]
       })
     ];
   } else {
@@ -167,7 +127,6 @@ module.exports = () => {
           <head>
             <meta charset='utf-8'>
             <title>Wordle Solver</title>
-            <link href='favicon.png' rel='shortcut icon'>
           </head>
           <body>
             <div id='app'></div>
@@ -179,12 +138,6 @@ module.exports = () => {
           description: 'a wordle solver',
           viewport: 'width=device-width, initial-scale=1'
         }
-      }),
-      new CopyWebpackPlugin({
-        patterns: [
-          { from: 'assets/favicon.png' },
-          { from: 'static' }
-        ]
       })
     ];
   }
