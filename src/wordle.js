@@ -37,7 +37,7 @@ export class Game {
                         break;
                     case "absent":
                         if (freq[c.charCodeAt(0) - 97] > 0) {
-                            return true; // We should have this letter
+                            return false; // We should have this letter
                         }
                         break;
                 }
@@ -51,6 +51,7 @@ export class Game {
     }
 
     findBestWord() {
+        // Finds the highest scoring word (the word that will eliminate the most words in the worst case).
         let max = -1;
         let best = '';
         for (let word of this.all_words) {
@@ -68,14 +69,10 @@ export class Game {
         //   ['aaaaa' + ...all words that don't contain 'a'...]
         // Then possible guess results we can get are:
         // [COR, COR, COR, COR, COR] -> 'aaaaa'
-        // [NP, NP, NP, NP, NP] -> ...all other words...
-        // So we can calculate the score as solutions - guess results and pick the lowest of those.
+        // [ABS, ABS, ABS, ABS, ABS] -> ...all other words...
 
-        // And our solutions include:
-        // 'aaaaa' + ...all words that don't contain 'a'...
-        // Then by guessing it, we can eliminate n-1 words in the BEST case, but in the worst case,
-        // we only eliminate 1.
-
+        // If the word is 'aaaaa', then we've guessed it in 1, but otherwise we still have n-1 words left to guess.
+        // That is: in the worst case, we eliminated 1 word -- so that is the score for this word.
         let max = -1;
         let bin_freq = Array(3 * 3 * 3 * 3 * 3).fill(0);
         for (let word of this.solutions) {
@@ -85,10 +82,12 @@ export class Game {
                 max = freq;
             }
         }
-        return solutions.length - max;
+        return this.solutions.length - max;
     }
 
     guessBin(guess, word) {
+        // We want to find the evaluation this guess has (e.g. correct, present, absent for each letter)
+
         // We want to build up frequencies based on the word
         let freq = Array(26).fill(0);
         for (let i = 0; i < 5; i++) {
@@ -118,7 +117,7 @@ export class Game {
             }
         }
 
-        // Now we can return the bin
+        // Now we can return the hash of the evaluation between 0 and 3^5.
         let bin = 0;
         for (let i = 0; i < 5; i++) {
             bin *= 3;

@@ -91,7 +91,7 @@
       }
     },
     mounted() {
-      this.current.letter = ['r', 'a', 'i', 's', 'e'];
+      this.current.letter = ['r', 'a', 'i', 's', 'e']; // RAISE is the optimal guess
     }
   }
 </script>
