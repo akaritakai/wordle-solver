@@ -2,6 +2,7 @@
   <div class="tile-container">
     <input class="tile"
            pattern="[A-Za-z]"
+           :aria-label="'The ' + ordinalName + ' letter of the guess'"
            v-model="letter"
            v-bind:disabled="!allow_input"
            v-bind:class="{
@@ -10,9 +11,15 @@
              present: evaluation === 'present'
            }">
     <div v-if="allow_input" class="tile-buttons">
-      <button class="tile-button absent" @click="evaluation = 'absent'"></button>
-      <button class="tile-button present" @click="evaluation = 'present'"></button>
-      <button class="tile-button correct" @click="evaluation = 'correct'"></button>
+      <button :aria-label='"Mark " + ordinalName + " letter as absent"'
+              class="tile-button absent"
+              @click="evaluation = 'absent'"></button>
+      <button :aria-label='"Mark " + ordinalName + " letter as present"'
+              class="tile-button present"
+              @click="evaluation = 'present'"></button>
+      <button :aria-label='"Mark " + ordinalName + " letter as correct"'
+              class="tile-button correct"
+              @click="evaluation = 'correct'"></button>
     </div>
   </div>
 </template>
@@ -37,6 +44,19 @@ export default {
     }
   },
   computed: {
+    ordinalName() {
+      if (this.index === 0) {
+        return "first";
+      } else if (this.index === 1) {
+        return "second";
+      } else if (this.index === 2) {
+        return "third";
+      } else if (this.index === 3) {
+        return "fourth";
+      } else if (this.index === 4) {
+        return "fifth";
+      }
+    },
     letter: {
       get: function() {
         return this.guess.letter[this.index];
