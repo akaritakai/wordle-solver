@@ -1,8 +1,19 @@
-import { all_words, solutions } from "./wordlist";
+import { /* all_words, */ solutions } from "./wordlist";
 
 export class Game {
     constructor() {
-        this.all_words = all_words;
+        // all_words contains all the potential guesses we could ever do.
+        // The problem with all_words is that it generates a lot of inhuman words.
+        // I haven't found a good way to filter out words from all_words that are possibly guessable by a human.
+        // I tried at least the following:
+        // - Google Book nGram scoring (how common is the word in the English corpus)
+        // - English Wikipedia frequency (how common is the word in the English Wikipedia)
+        // Both approaches yielded kind of garbage data still. It also elevated names, which I wasn't thrilled with
+        // (why are those guessable anyway?).
+        // So until I can do a proper filtering, I'm just going to use the solutions list as my word list.
+
+        // this.all_words = all_words;
+        this.all_words = solutions;
         this.solutions = [...solutions];
     }
 
