@@ -77,7 +77,7 @@ export class Game {
         let bin_freq = Array(3 * 3 * 3 * 3 * 3).fill(0);
         for (let word of this.solutions) {
             let bin = this.guessBin(guess, word);
-            let freq = bin_freq[bin]++;
+            let freq = ++bin_freq[bin];
             if (freq > max) {
                 max = freq;
             }
