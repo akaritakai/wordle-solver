@@ -27,20 +27,23 @@ export class Game {
                 freq[word.charCodeAt(i) - 97]++;
             }
 
-            // Now we can test that the word matches against our guess types.
+            // First remove correctly placed guesses
+            for (let i = 0; i < 5; i++) {
+                if (guess.evaluation[i] === "correct") {
+                    let c = guess.letter[i][0];
+                    if (c !== word[i]) {
+                        return false; // We should have a letter in this position
+                    }
+                    freq[c.charCodeAt(0) - 97]--;
+                }
+            }
+
+            // Then, remove other types of guesse
             for (let i = 0; i < 5; i++) {
                 let c = guess.letter[i][0];
                 switch (guess.evaluation[i]) {
-                    case "correct":
-                        if (word[i] !== c) {
-                            return false; // We should have a letter in this position.
-                        }
-                        if (--freq[c.charCodeAt(0) - 97] < 0) {
-                            return false; // Our guess marks this letter as , it's not in the word.
-                        }
-                        break;
                     case "present":
-                        if (word[i] === c) {
+                        if (c === word[i]) {
                             return false; // We should not have a letter in this position
                         }
                         if (--freq[c.charCodeAt(0) - 97] < 0) {
