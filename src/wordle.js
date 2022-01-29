@@ -63,13 +63,28 @@ export class Game {
 
     findBestWord() {
         // Finds the highest scoring word (the word that will eliminate the most words in the worst case).
-        let max = -1;
+        let max_eliminations = -1;
+        let max_matched = -1;
+        let max_correct = -1;
         let best = '';
         for (let word of this.all_words) {
             let score = this.scoreWord(word);
-            if (score > max) {
-                max = score;
+            if (score.eliminations > max_eliminations) {
+                max_eliminations = score.eliminations;
+                max_matched = score.matched;
+                max_correct = score.correct;
                 best = word;
+            } else if (score.eliminations === max_eliminations) {
+                if (score.matched > max_matched) {
+                    max_matched = score.matched;
+                    max_correct = score.correct;
+                    best = word;
+                } else if (score.matched === max_matched) {
+                    if (score.correct > max_correct) {
+                        max_correct = score.correct;
+                        best = word;
+                    }
+                }
             }
         }
         return best;
@@ -83,20 +98,32 @@ export class Game {
         // [ABS, ABS, ABS, ABS, ABS] -> ...all other words...
 
         // If the word is 'aaaaa', then we've guessed it in 1, but otherwise we still have n-1 words left to guess.
-        // That is: in the worst case, we eliminated 1 word -- so that is the score for this word.
-        let max = -1;
-        let bin_freq = Array(3 * 3 * 3 * 3 * 3).fill(0);
+        // That is: in the worst case, we eliminated 1 word -- so that is the max eliminated for this word.
+
+        // We also want to prefer "pretty solutions" in terms of the number of letters they reveal info about, so for
+        // words that tie on eliminations, we add in that information as well.
+
+        let eliminations = 0;
+        let matched = 0;
+        let correct = 0;
+        let hash_freq = Array(3 * 3 * 3 * 3 * 3).fill(0);
         for (let word of this.solutions) {
-            let bin = this.guessBin(guess, word);
-            let freq = ++bin_freq[bin];
-            if (freq > max) {
-                max = freq;
+            let data = this.guessData(guess, word);
+            let freq = ++hash_freq[data.hash];
+            if (freq > eliminations) {
+                eliminations = freq;
             }
+            matched += data.correct + data.present;
+            correct += data.correct;
         }
-        return this.solutions.length - max;
+        return {
+            eliminations: eliminations,
+            matched: matched,
+            correct: correct
+        };
     }
 
-    guessBin(guess, word) {
+    guessData(guess, word) {
         // We want to find the evaluation this guess has (e.g. correct, present, absent for each letter)
 
         // We want to build up frequencies based on the word
@@ -106,6 +133,9 @@ export class Game {
         }
 
         let result = Array(5).fill('');
+        let num_correct = 0;
+        let num_present = 0;
+        let num_absent = 0;
 
         // Now let's iterate through the guess and mark correctly placed/missing letters
         for (let i = 0; i < 5; i++) {
@@ -113,6 +143,7 @@ export class Game {
                 // The guess is correct
                 result[i] = "correct";
                 freq[guess[i].charCodeAt(0) - 97]--;
+                num_correct++;
             }
         }
 
@@ -122,23 +153,31 @@ export class Game {
                 if (freq[guess[i].charCodeAt(0) - 97] > 0) {
                     result[i] = "present";
                     freq[guess[i].charCodeAt(0) - 97]--;
+                    num_present++;
                 } else {
                     result[i] = "absent";
+                    num_absent++;
                 }
             }
         }
 
         // Now we can return the hash of the evaluation between 0 and 3^5.
-        let bin = 0;
+        let hash = 0;
         for (let i = 0; i < 5; i++) {
-            bin *= 3;
+            hash *= 3;
             if (result[i] === "correct") {
-                bin += 2;
+                hash += 2;
             } else if (result[i] === "present") {
-                bin += 1;
+                hash += 1;
             }
         }
-        return bin;
+
+        return {
+            hash: hash,
+            correct: num_correct,
+            present: num_present,
+            absent: num_absent
+        };
     }
 }
 
