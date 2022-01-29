@@ -15,6 +15,7 @@ export class Game {
         // this.all_words = all_words;
         this.all_words = solutions;
         this.solutions = [...solutions];
+        this.guesses = [];
     }
 
     applyGuess(guess) {
@@ -59,6 +60,9 @@ export class Game {
 
         // Remove words from the solutions that don't match our guess.
         this.solutions = this.solutions.filter(filter);
+
+        // Indicate that we have made a guess with this word
+        this.guesses.push(guess);
     }
 
     findBestWord() {
@@ -68,6 +72,11 @@ export class Game {
         let max_correct = -1;
         let best = '';
         for (let word of this.all_words) {
+            // We don't want to guess an already guessed word, since it would yield no new info.
+            // This is mostly sanity checking.
+            if (this.guesses.includes(word)) {
+                continue;
+            }
             let score = this.scoreWord(word);
             if (score.eliminations > max_eliminations) {
                 max_eliminations = score.eliminations;
@@ -117,7 +126,7 @@ export class Game {
             correct += data.correct;
         }
         return {
-            eliminations: eliminations,
+            eliminations: this.solutions.length - eliminations,
             matched: matched,
             correct: correct
         };
