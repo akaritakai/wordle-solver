@@ -71,7 +71,12 @@ export class Game {
     }
 
     findBestWord() {
-        // Finds the highest scoring word (the word that will eliminate the most words in the worst case).
+        // Finds the highest scoring word (the word that removes the most entropy).
+        // On ties, we break in the following order:
+        // - Number of eliminations made in the worst case
+        // - Number of matched (correct or present) letters over all possibilities
+        // - Number of correct letters over all possibilities
+        // - Lexicographic order
         let max_entropy = -1;
         let max_eliminations = -1;
         let max_matched = -1;
