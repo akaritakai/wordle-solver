@@ -1,4 +1,4 @@
-import { extra, solutions } from "./wordlist";
+import { extra, solutions, skip } from "./wordlist";
 
 export class Game {
     constructor() {
@@ -14,6 +14,9 @@ export class Game {
         // I did end up doing a manual filtering of the solution list based on the WordFrequencyData function in
         // Mathematica. These extra curated words are present in "extra", so the total words we should be guessing is
         // extra + solutions.
+
+        // There are also words in our solution list that are really uncommon (e.g. 'BETEL' that are guessable words,
+        // but we don't want to guess them until we have to). These are present in "skip".
 
         this.all_words = [...new Set([...solutions, ...extra])];
         this.solutions = [...solutions];
@@ -77,6 +80,7 @@ export class Game {
         // - Number of matched (correct or present) letters over all possibilities
         // - Number of correct letters over all possibilities
         // - Lexicographic order
+        let max_common = -1;
         let max_entropy = -1;
         let max_eliminations = -1;
         let max_matched = -1;
@@ -89,27 +93,36 @@ export class Game {
                 continue;
             }
             let score = this.scoreWord(word);
-            if (score.entropy > max_entropy) {
+            if (score.common > max_common) {
+                max_common = score.common;
                 max_entropy = score.entropy;
                 max_eliminations = score.eliminations;
                 max_matched = score.matched;
                 max_correct = score.correct;
                 best = word;
-            } else if (score.entropy === max_entropy) {
-                if (score.eliminations > max_eliminations) {
+            } else if (score.common === max_common) {
+                if (score.entropy > max_entropy) {
+                    max_entropy = score.entropy;
                     max_eliminations = score.eliminations;
                     max_matched = score.matched;
                     max_correct = score.correct;
                     best = word;
-                } else if (score.eliminations === max_eliminations) {
-                    if (score.matched > max_matched) {
+                } else if (score.entropy === max_entropy) {
+                    if (score.eliminations > max_eliminations) {
+                        max_eliminations = score.eliminations;
                         max_matched = score.matched;
                         max_correct = score.correct;
                         best = word;
-                    } else if (score.matched === max_matched) {
-                        if (score.correct > max_correct) {
+                    } else if (score.eliminations === max_eliminations) {
+                        if (score.matched > max_matched) {
+                            max_matched = score.matched;
                             max_correct = score.correct;
                             best = word;
+                        } else if (score.matched === max_matched) {
+                            if (score.correct > max_correct) {
+                                max_correct = score.correct;
+                                best = word;
+                            }
                         }
                     }
                 }
@@ -154,6 +167,7 @@ export class Game {
         }
 
         return {
+            common: skip.contains(guess) ? 0 : 1,
             entropy: entropy,
             eliminations: this.solutions.length - eliminations,
             matched: matched,
