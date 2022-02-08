@@ -13,10 +13,10 @@ Build and Host
 Both Yarn and Node.js must be installed on the host.
 
 To build, run `yarn build`. This will create a `dist` directory with the compiled files. Then, open the
-`dist/index.html`file in your browser.
+`dist/index.html` file in your browser.
 
-To host, upload the files to a web server and make the files in `dist` available at the root with `index.html` as the
-default.
+To host, upload the files to a web server and make the files in `dist` available at the root with `dist/index.html` as
+the default page.
 
 Strategy
 --------
