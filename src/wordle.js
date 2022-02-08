@@ -167,7 +167,7 @@ export class Game {
         }
 
         return {
-            common: skip.contains(guess) ? 0 : 1,
+            common: skip.includes(guess) ? 0 : 1,
             entropy: entropy,
             eliminations: this.solutions.length - eliminations,
             matched: matched,
