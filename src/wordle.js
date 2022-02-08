@@ -1,8 +1,8 @@
-import { /* all_words, */ solutions } from "./wordlist";
+import { extra, solutions } from "./wordlist";
 
 export class Game {
     constructor() {
-        // all_words contains all the potential guesses we could ever do.
+        // Let's say all_words contains all the potential guesses we could ever do.
         // The problem with all_words is that it generates a lot of inhuman words.
         // I haven't found a good way to filter out words from all_words that are possibly guessable by a human.
         // I tried at least the following:
@@ -10,10 +10,12 @@ export class Game {
         // - English Wikipedia frequency (how common is the word in the English Wikipedia)
         // Both approaches yielded kind of garbage data still. It also elevated names, which I wasn't thrilled with
         // (why are those guessable anyway?).
-        // So until I can do a proper filtering, I'm just going to use the solutions list as my word list.
 
-        // this.all_words = all_words;
-        this.all_words = solutions;
+        // I did end up doing a manual filtering of the solution list based on the WordFrequencyData function in
+        // Mathematica. These extra curated words are present in "extra", so the total words we should be guessing is
+        // extra + solutions.
+
+        this.all_words = [...new Set([...solutions, ...extra])];
         this.solutions = [...solutions];
         this.guesses = [];
     }
@@ -38,7 +40,7 @@ export class Game {
                 }
             }
 
-            // Then, remove other types of guesse
+            // Then, remove other types of guesses
             for (let i = 0; i < 5; i++) {
                 let c = guess.letter[i][0];
                 switch (guess.evaluation[i]) {
@@ -70,6 +72,7 @@ export class Game {
 
     findBestWord() {
         // Finds the highest scoring word (the word that will eliminate the most words in the worst case).
+        let max_entropy = -1;
         let max_eliminations = -1;
         let max_matched = -1;
         let max_correct = -1;
@@ -81,20 +84,28 @@ export class Game {
                 continue;
             }
             let score = this.scoreWord(word);
-            if (score.eliminations > max_eliminations) {
+            if (score.entropy > max_entropy) {
+                max_entropy = score.entropy;
                 max_eliminations = score.eliminations;
                 max_matched = score.matched;
                 max_correct = score.correct;
                 best = word;
-            } else if (score.eliminations === max_eliminations) {
-                if (score.matched > max_matched) {
+            } else if (score.entropy === max_entropy) {
+                if (score.eliminations > max_eliminations) {
+                    max_eliminations = score.eliminations;
                     max_matched = score.matched;
                     max_correct = score.correct;
                     best = word;
-                } else if (score.matched === max_matched) {
-                    if (score.correct > max_correct) {
+                } else if (score.eliminations === max_eliminations) {
+                    if (score.matched > max_matched) {
+                        max_matched = score.matched;
                         max_correct = score.correct;
                         best = word;
+                    } else if (score.matched === max_matched) {
+                        if (score.correct > max_correct) {
+                            max_correct = score.correct;
+                            best = word;
+                        }
                     }
                 }
             }
@@ -112,13 +123,13 @@ export class Game {
         // If the word is 'aaaaa', then we've guessed it in 1, but otherwise we still have n-1 words left to guess.
         // That is: in the worst case, we eliminated 1 word -- so that is the max eliminated for this word.
 
-        // We also want to prefer "pretty solutions" in terms of the number of letters they reveal info about, so for
-        // words that tie on eliminations, we add in that information as well.
+        // We want to build up this idea of how many words are eliminated by this guess on average into the expected
+        // entropy of the guess.
 
+        let hash_freq = Array(3 * 3 * 3 * 3 * 3).fill(0);
         let eliminations = 0;
         let matched = 0;
         let correct = 0;
-        let hash_freq = Array(3 * 3 * 3 * 3 * 3).fill(0);
         for (let word of this.solutions) {
             let data = this.guessData(guess, word);
             let freq = ++hash_freq[data.hash];
@@ -128,11 +139,21 @@ export class Game {
             matched += data.correct + data.present;
             correct += data.correct;
         }
+
+        let entropy = 0;
+        for (let i = 0; i < hash_freq.length; i++) {
+            if (hash_freq[i] > 0) {
+                let p = hash_freq[i] / this.solutions.length;
+                entropy -= p * Math.log2(p);
+            }
+        }
+
         return {
+            entropy: entropy,
             eliminations: this.solutions.length - eliminations,
             matched: matched,
             correct: correct
-        };
+        }
     }
 
     guessData(guess, word) {
