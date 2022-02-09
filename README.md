@@ -6,6 +6,25 @@ which is designed to solve daily [Wordle](https://www.powerlanguage.co.uk/wordle
 
 The idea is to have the solver make human-possible guesses while still solving the puzzle in as few guesses as possible.
 
+Performance
+-----------
+The application does not require any network access once the page is loaded, and is very performant, even on mobile
+devices.
+
+It should never lose a game.
+
+```
+Guess Distribution:
+1:                           1     0.00%
+2: ##                        58    0.00%
+3: ######################### 1137  0.00%
+4: #######################   1031  0.00%
+5: ##                        86    0.00%
+6:                           2     0.00%
+
+Average Guesses Per Day: ~3.496
+```
+
 Build and Host
 --------------
 
