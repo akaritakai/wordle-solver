@@ -6,6 +6,8 @@ which is designed to solve daily [Wordle](https://www.powerlanguage.co.uk/wordle
 
 The idea is to have the solver make human-possible guesses while still solving the puzzle in as few guesses as possible.
 
+The production app can be accessed here: https://akaritakai.net/wordle
+
 Performance
 -----------
 The application does not require any network access once the page is loaded, and is very performant, even on mobile
