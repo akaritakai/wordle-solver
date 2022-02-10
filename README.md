@@ -70,3 +70,14 @@ tie-breaks in order if two words would remove the same amount of entropy:
 - The number of squares matched as present or correct across all possible solutions
 - The number of squares matched as correct across all possible solutions
 - Lexicographic order
+
+Future Ideas
+------------
+
+1. Calculate what the Wordle of the given day is and find an aesthetically pleasing path.
+2. Allow for inhuman guess strength for Wordle by allowing the full list of words being guessed.
+3. Add support for other Wordle-like games (e.g. Queerdle, Byrdle, etc.)
+4. Add support for solving words that aren't just 5 letters long (e.g. 8 letters).
+5. Add support for bigger word lists and frequency info (e.g. Google books, Wikipedia, Wiktionary, other sources? etc.)
+6. Add support for calculating overall n-gram frequency to provide info of what the word might look like even if the word isn't known
+7. Add support for challenge modes (e.g. challenge mode in wordle and harder modes in Absurdle)
