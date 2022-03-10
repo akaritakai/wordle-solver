@@ -6,7 +6,9 @@ which is designed to solve daily [Wordle](https://www.powerlanguage.co.uk/wordle
 
 The idea is to have the solver make human-possible guesses while still solving the puzzle in as few guesses as possible.
 
-The production app can be accessed here: https://akaritakai.net/wordle
+The production app can be accessed here: https://akaritakai.net/wordle/
+
+**Note**: This has not been updated for the changes made with the NY Times acquisition.
 
 Performance
 -----------
@@ -26,6 +28,9 @@ Guess Distribution:
 
 Average Guesses Per Day: ~3.496
 ```
+
+In the future, I will look at additional optimization for the first and second word choices to reduce the average
+guesses per day.
 
 Build and Host
 --------------
