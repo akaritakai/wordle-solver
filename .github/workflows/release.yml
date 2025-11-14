@@ -48,7 +48,7 @@ jobs:
         with:
           tag_name: "${{ env.VERSION }}"
           name: "Release ${{ env.VERSION }}"
-          files: artifacts/www.akaritakai.net-${{ env.VERSION }}.tar.gz
+          files: artifacts/wordle-solver-${{ env.VERSION }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GH_AUTH_TOKEN }}
 
